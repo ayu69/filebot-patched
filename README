@@ -1,0 +1,19 @@
+I modified the Java bytecodes for the getMirror() function to just bypass the cache and always return https://thetvdb.com. I'm not a Java programmer and I'm not sure if this will be viable long term, but my deluge+filebottool Unraid docker is now finally able to process my tv shows.
+
+A proxy solution is probably the best solution though. I just had issues getting nginx to work correctly and going through the decompiled Java source and playing around with bytecode editing sounded more fun.
+
+If anyone wants to reproduce what I did:
+
+You will need a Java bytecode editor such as https://github.com/Col-E/Recaf. Download Recaf and then run it. Go to File -> Load and then point it to your FileBot.jar. From the left side menu go to net/filebot/web and open TheTVDBClientV1 class.
+
+Click the Method's tab. Find the getMirror method and open it. Click the Edit Instructions button.
+
+Find the instruction that goes: "IF_ACMPNE LABEL C" and double click on it. Change the opcode to "IF_ACMPEQ" instead.
+
+Find the instruction that goes LDC "http://thetvdb.com" a couple lines down and double click on it. Change its value to "https://thetvdb.com" without the quotes.
+
+The code should now look like this: https://imgur.com/a/bWBZzEd
+
+Close all the windows you just opened to go back to the main Recaf screen. Go to File -> Export and save this as FileBot.jar.
+
+You can now replace your existing FileBot.jar with your newly edited copy. I also cleared my FileBot's cache by running: filebot -clear-cache.
